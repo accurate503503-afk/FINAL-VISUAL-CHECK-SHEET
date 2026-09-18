@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#009b4d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<title>ULTRA@503 – Visual Check Sheet</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <img src="assets/ultra-logo.png" class="logo" alt="ULTRA Corpotech">
+  <div><div class="brand">ULTRA@503</div><div class="subtitle">Visual Check Sheet</div></div>
+  <div class="format-box">
+    <div>Format No : UC/QA/FR/61</div>
+    <div>Rev / Date : 00/06.08.2025</div>
+  </div>
+  <span class="status" id="onlineStatus">ONLINE</span>
+</header>
+
+<main class="container">
+
+<!-- ============== EMPLOYEE PROFILE ============== -->
+<section class="panel" id="profilePanel">
+  <div class="section-head"><h2>1. Employee Profile</h2><span class="badge" id="profileBadge">Not saved</span></div>
+
+  <div id="profileForm" class="grid two">
+    <label>Employee Name<input id="empName" placeholder="e.g. Rahul Sharma" autocomplete="name"></label>
+    <label>Employee ID No.<input id="empId" placeholder="e.g. EMP-1024" autocomplete="off"></label>
+  </div>
+  <div class="actions">
+    <button class="primary" id="saveProfile">Save Profile</button>
+  </div>
+
+  <div id="profileSaved" class="profile-saved hidden">
+    <div><strong id="profileSavedName">—</strong> <span class="muted">(<span id="profileSavedId">—</span>)</span></div>
+    <button class="link-btn" id="editProfile">Change</button>
+  </div>
+</section>
+
+<!-- ============== ROUTE CARD ============== -->
+<section class="panel">
+  <div class="section-head"><h2>2. Route Card</h2><span class="badge">QR + Manual Entry</span></div>
+  <div class="actions">
+    <button class="primary" id="scanBtn">▣ Scan Route Card QR</button>
+  </div>
+  <div id="mobileNotice" class="mobile-notice hidden"></div>
+  <div id="scanner" class="scanner hidden">
+    <video id="video" playsinline autoplay muted></video>
+    <canvas id="scanCanvas" hidden></canvas>
+    <div class="scan-overlay"><div class="scan-frame"></div><div class="scan-hint">Place QR inside the frame</div></div>
+    <button class="danger" id="stopScan">Stop Scanner</button>
+    <div id="scanMsg" class="hint">Camera starts only after permission is granted.</div>
+  </div>
+  <div id="qrParseMsg" class="parse-msg hidden"></div>
+
+  <div class="manual-tools">
+    <textarea id="qrText" placeholder="Paste decoded QR text here, or enter the exact Route Card QR payload."></textarea>
+    <button class="secondary" id="parseBtn">Read QR Data</button>
+  </div>
+
+  <div class="grid route-grid">
+    <label>Part Number<input id="partNo" placeholder="e.g. H078276200"></label>
+    <label>Customer PO No.<input id="poNo" placeholder="e.g. 4513493344"></label>
+    <label>PO Line No.<input id="poLine" placeholder="e.g. 00010"></label>
+    <label>UC Batch No. &amp; Job Serial No.<input id="ucBatch" placeholder="e.g. UC26B01120 001 to 015"></label>
+    <label>Heat No.<input id="heatNo" placeholder="e.g. T225064730"></label>
+    <label>PO Qty<input id="poQty" placeholder="e.g. 12.000 NOS"></label>
+    <label>Total Qty<input id="totalQty" placeholder="e.g. 15.000 NOS"></label>
+    <label class="req">Customer Name
+      <select id="customer">
+        <option value="">Select customer</option>
+        <option>Baker Hughes</option><option>WIS</option><option>Weatherford</option>
+        <option>Halliburton</option><option>OTC</option><option>Interunit</option>
+        <option>Mainspring</option><option>Other</option>
+      </select>
+    </label>
+  </div>
+</section>
+
+<!-- ============== VISUAL CHECK SHEET ============== -->
+<section class="panel">
+  <div class="section-head"><h2>3. Visual Check Sheet</h2><span class="badge">7 Points · YES / NO</span></div>
+
+  <div class="check-point" data-point="1">
+    <div class="cp-head"><span class="cp-num">1</span>
+      <div class="cp-text">Route Card completely filled upto Coating operation,(If Applicable) ID/ OD Slotting part received with PPE Cap.
+        <div class="cp-ref">Refer SOP-503-QA-07 SOP for Visual Inspection</div>
+      </div>
+    </div>
+    <div class="yn-group" data-yn="1">
+      <button class="yn yes" data-val="YES">YES</button>
+      <button class="yn no" data-val="NO">NO</button>
+    </div>
+    <label class="cp-remark">Remark (optional)<textarea id="remark1" placeholder="Optional remark"></textarea></label>
+  </div>
+
+  <div class="check-point" data-point="2">
+    <div class="cp-head"><span class="cp-num">2</span>
+      <div class="cp-text">Verified Final ITP(All Parameter) fill up &amp; Sign by Inspector &amp; Supervisor</div>
+    </div>
+    <div class="yn-group" data-yn="2">
+      <button class="yn yes" data-val="YES">YES</button>
+      <button class="yn no" data-val="NO">NO</button>
+    </div>
+  </div>
+
+  <div class="check-point" data-point="3">
+    <div class="cp-head"><span class="cp-num">3</span>
+      <div class="cp-text">Verified Orientation, Special Note(If Any) &amp; Special Operation(If Any)</div>
+    </div>
+    <div class="yn-group" data-yn="3">
+      <button class="yn yes" data-val="YES">YES</button>
+      <button class="yn no" data-val="NO">NO</button>
+    </div>
+    <label class="cp-remark">Remark (optional)<textarea id="remark3" placeholder="Optional remark"></textarea></label>
+    <div class="cp-photos" data-photopoint="3">
+      <div class="actions"><button class="secondary photo-btn" data-point="3">📷 Give Photographs</button></div>
+      <input type="file" accept="image/*" capture="environment" multiple class="photo-input hidden" data-point="3">
+      <div class="photo-grid" id="photoGrid-3"></div>
+    </div>
+  </div>
+
+  <div class="check-point" data-point="4">
+    <div class="cp-head"><span class="cp-num">4</span>
+      <div class="cp-text">Reverified Close dimn upto 0.005" and reading written in the ITP, Slitting Ring Type part should Verify 100%, OD, ID &amp; Total Length</div>
+    </div>
+    <div class="yn-group" data-yn="4">
+      <button class="yn yes" data-val="YES">YES</button>
+      <button class="yn no" data-val="NO">NO</button>
+    </div>
+    <div class="cp-photos" data-photopoint="4">
+      <div class="actions"><button class="secondary photo-btn" data-point="4">📷 Give Photographs</button></div>
+      <input type="file" accept="image/*" capture="environment" multiple class="photo-input hidden" data-point="4">
+      <div class="photo-grid" id="photoGrid-4"></div>
+    </div>
+  </div>
+
+  <div class="check-point" data-point="5">
+    <div class="cp-head"><span class="cp-num">5</span>
+      <div class="cp-text">Verified ID hole upto 20mm by Borescope, ID &gt;20mm use flash light/ Batteries.</div>
+    </div>
+    <div class="yn-group" data-yn="5">
+      <button class="yn yes" data-val="YES">YES</button>
+      <button class="yn no" data-val="NO">NO</button>
+    </div>
+    <div class="cp-photos" data-photopoint="5">
+      <div class="actions"><button class="secondary photo-btn" data-point="5">📷 Give Photographs</button></div>
+      <input type="file" accept="image/*" capture="environment" multiple class="photo-input hidden" data-point="5">
+      <div class="photo-grid" id="photoGrid-5"></div>
+    </div>
+  </div>
+
+  <div class="check-point" data-point="6">
+    <div class="cp-head"><span class="cp-num">6</span>
+      <div class="cp-text">Reverified ID/ OD Thread, Tapped Holes(If yes, Reading Written in ITP) &amp; Relation Gauge (If Any).</div>
+    </div>
+    <div class="yn-group" data-yn="6">
+      <button class="yn yes" data-val="YES">YES</button>
+      <button class="yn no" data-val="NO">NO</button>
+    </div>
+    <label class="cp-remark">Remark (optional)<textarea id="remark6" placeholder="Optional remark"></textarea></label>
+    <div class="cp-photos" data-photopoint="6">
+      <div class="actions"><button class="secondary photo-btn" data-point="6">📷 Give Photographs</button></div>
+      <input type="file" accept="image/*" capture="environment" multiple class="photo-input hidden" data-point="6">
+      <div class="photo-grid" id="photoGrid-6"></div>
+    </div>
+  </div>
+
+  <div class="check-point" data-point="7">
+    <div class="cp-head"><span class="cp-num">7</span>
+      <div class="cp-text">Parts is Free From Dent, Damages, Burr, Dust, Dirt particle, Pitting Marks &amp; Rusty Spots.
+        <div class="cp-ref">Refer WI-503-QA-11_R1 WI FOR Updated VISUAL INSPECTION</div>
+      </div>
+    </div>
+    <div class="yn-group" data-yn="7">
+      <button class="yn yes" data-val="YES">YES</button>
+      <button class="yn no" data-val="NO">NO</button>
+    </div>
+    <div class="cp-photos" data-photopoint="7">
+      <div class="actions"><button class="secondary photo-btn" data-point="7">📷 Give Photographs</button></div>
+      <input type="file" accept="image/*" capture="environment" multiple class="photo-input hidden" data-point="7">
+      <div class="photo-grid" id="photoGrid-7"></div>
+    </div>
+  </div>
+
+  <div id="checkError" class="helper-err hidden"></div>
+</section>
+
+<!-- ============== INSPECTOR INFO ============== -->
+<section class="panel">
+  <div class="section-head"><h2>4. Inspector Information</h2></div>
+  <div class="grid two">
+    <label>Inspector Name<input id="inspectorName" readonly></label>
+    <label>Employee ID No.<input id="inspectorId" readonly></label>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr;">
+    <label>Inspection Date / Time<input id="inspectionDt" readonly></label>
+  </div>
+</section>
+
+<!-- ============== PDF ============== -->
+<section class="panel">
+  <div class="section-head"><h2>5. PDF &amp; Sharing</h2></div>
+  <div class="actions big-actions">
+    <button class="secondary" id="newEntry">＋ Create New Entry</button>
+    <button class="primary" id="createPdf">Generate PDF</button>
+    <button class="secondary" id="downloadPdf" disabled>Download PDF</button>
+    <button class="secondary" id="sharePdf" disabled>Share PDF</button>
+  </div>
+  <div id="pdfStatus" class="status-box">No check sheet generated yet.</div>
+</section>
+
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
